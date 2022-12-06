@@ -1,0 +1,49 @@
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border: 1px solid black;
+    background: white;
+    border-radius: 5px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &.completed {
+        background: darkgrey;
+        color: white;
+        border: 1px solid grey;
+        text-decoration: line-through;
+    }
+
+    .left {
+        display: flex;
+        align-items: center;
+
+        input {
+            height: 20px;
+            width: 20px;
+            margin-right: 20px;
+        }
+    }
+
+    .btns {
+        button {
+            background: red;
+            color: white;
+            outline: 0;
+            border: 0;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+
+            &:active {
+                transform: scale(.9);
+                background: rgb(214, 1, 1);
+            }
+        }
+    }
+}
