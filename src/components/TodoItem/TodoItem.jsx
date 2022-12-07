@@ -1,9 +1,10 @@
 import React from 'react'
+import { Draggable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux'
 import { removeTodo, toggleCompleted } from '../../store/slices/todosSlice';
 import cl from './TodoItem.module.scss'
 
-function TodoItem({ todo }) {
+function TodoItem({ todo, index }) {
     const className = todo.completed ? cl.item + ' ' + cl.completed : cl.item
     const dispatch = useDispatch();
 
@@ -15,23 +16,35 @@ function TodoItem({ todo }) {
     }
 
     return (
-        <div className={className}>
-            <div className={cl.left}>
-                <input
-                    value={todo.completed}
-                    onChange={toggleCompletedHandler}
-                    type='checkbox'
-                />
-                {todo.body}
-            </div>
-            <div className={cl.btns}>
-                <button
-                    onClick={removeTodoHandler}
+        <Draggable
+            draggableId={todo.id}
+            index={index}
+        >
+            {(provided) => (
+                <div
+                    className={className}
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
                 >
-                    X
-                </button>
-            </div>
-        </div>
+                    <div className={cl.left}>
+                        <input
+                            value={todo.completed}
+                            onChange={toggleCompletedHandler}
+                            type='checkbox'
+                        />
+                        {todo.body}
+                    </div>
+                    <div className={cl.btns}>
+                        <button
+                            onClick={removeTodoHandler}
+                        >
+                            X
+                        </button>
+                    </div>
+                </div>
+            )}
+        </Draggable>
     )
 }
 
