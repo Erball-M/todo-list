@@ -4,10 +4,14 @@ const todosSlice = createSlice({
     name: 'todos',
     initialState: {
         categories: [
-            { id: '0', name: 'Без категории', categoryTodos: [] },
+            { id: '0', name: 'Без категории', categoryTodos: ['12'] },
+            { id: '1', name: 'С категорией', categoryTodos: ['22'] },
         ],
-        todos: [],
-        categoriesOrder: ['0']
+        todos: [
+            { id: '12', body: 'first', completed: false },
+            { id: '22', body: 'second', completed: false },
+        ],
+        categoriesOrder: ['0', '1']
     },
     reducers: {
         addTodo: (state, action) => {
@@ -23,9 +27,9 @@ const todosSlice = createSlice({
             zxx.categoryTodos = zxx.categoryTodos.filter(todoId => todoId !== action.payload)
             state.todos = state.todos.filter(todo => todo.id !== action.payload)
         },
-        cleanCompleted: (state) => {
-            state.todos = state.todos.filter(todo => todo.completed === true)
-        },
+        // cleanCompleted: (state) => {
+        //     state.todos = state.todos.filter(todo => todo.completed === true)
+        // },
         addCategory: (state, action) => {
             state.categories.push({ ...action.payload, categoryTodos: [] })
             state.categoriesOrder.push(action.payload.id)
@@ -34,7 +38,7 @@ const todosSlice = createSlice({
             state.categories.find(category => category.id === action.payload.id).categoryTodos = action.payload.order
         },
         setCategoriesOrder: (state, action) => {
-
+            state.categoriesOrder = action.payload
         },
     }
 })
@@ -43,7 +47,7 @@ export const {
     addTodo,
     toggleCompleted,
     removeTodo,
-    cleanCompleted,
+    // cleanCompleted,
     addCategory,
     setOrder,
     setCategoriesOrder,

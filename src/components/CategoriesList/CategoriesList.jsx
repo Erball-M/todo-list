@@ -1,8 +1,8 @@
 import React from 'react'
-import { DragDropContext } from 'react-beautiful-dnd'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { setOrder } from '../../store/slices/todosSlice'
+import { setCategoriesOrder, setOrder } from '../../store/slices/todosSlice'
 import CategoryItem from '../CategoryItem/CategoryItem'
 import cl from './CategoriesList.module.scss'
 
@@ -20,6 +20,15 @@ function CategoriesList() {
             destination.droppableId === source.droppableId
             && destination.index === source.index
         ) return;
+
+
+        if (source.droppableId === 'categories-wrapper') {
+            const newCategoriesOrder = [...categoriesOrder]
+            newCategoriesOrder.splice(source.index, 1)
+            newCategoriesOrder.splice(destination.index, 0, draggableId)
+            dispatch(setCategoriesOrder(newCategoriesOrder))
+            return
+        }
 
 
         if (destination.droppableId !== source.droppableId) {
@@ -43,18 +52,26 @@ function CategoriesList() {
     if (!todos.length) return <h2 className={cl.title}>Заданий пока нет...</h2>
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
-            <div className={cl.list}>
-
-                {
-                    categoriesOrder.map(item => (
-                        <CategoryItem
-                            category={categories.find(category => category.id === item)}
-                            key={item}
-                        />
-                    ))
-                }
-
-            </div >
+            <Droppable droppableId='categories-wrapper' type='column'>
+                {(provided) => (
+                    <div
+                        className={cl.list}
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                    >
+                        {
+                            categoriesOrder.map((item, index) => (
+                                <CategoryItem
+                                    category={categories.find(category => category.id === item)}
+                                    index={index}
+                                    key={item}
+                                />
+                            ))
+                        }
+                        {provided.placeholder}
+                    </div >
+                )}
+            </Droppable>
         </DragDropContext>
     )
 }
