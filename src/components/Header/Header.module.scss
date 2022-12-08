@@ -1,0 +1,11 @@
+.header {
+    background: var(--header-bg);
+    color: var(--header-text);
+
+    .toggler {
+        cursor: pointer;
+        padding: 5px 10px;
+        border: 1px solid white;
+        border-radius: 30px;
+    }
+}

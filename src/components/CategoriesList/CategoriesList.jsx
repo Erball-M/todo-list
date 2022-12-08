@@ -49,7 +49,7 @@ function CategoriesList() {
         dispatch(setOrder({ id: source.droppableId, order }))
     }
 
-    if (!todos.length) return <h2 className={cl.title}>Заданий пока нет...</h2>
+    // if (!todos.length) return <h2 className={cl.title}>Заданий пока нет...</h2>
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId='categories-wrapper' type='column'>

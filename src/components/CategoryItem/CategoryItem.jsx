@@ -8,7 +8,7 @@ function CategoryItem({ category, index }) {
     const todos = useSelector(state => state.todos.todos)
     const filteredTodos = category.categoryTodos.map(item => todos.find(todo => todo.id === item))
 
-    if (!filteredTodos.length) return null
+    // if (!filteredTodos.length) return null
     return (
         <Draggable
             draggableId={category.id}
@@ -21,21 +21,29 @@ function CategoryItem({ category, index }) {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                 >
-                    <h2>{category.name}</h2>
+                    <div className={cl.title}>
+                        <h2>{category.name}</h2>
+                    </div>
                     <Droppable droppableId={category.id}>
                         {(provided) => (
                             <div
+                                className={cl.list}
                                 ref={provided.innerRef}
                                 key={category.id}
                                 {...provided.droppableProps}
                             >
-                                {filteredTodos.map((todo, index) => (
-                                    <TodoItem
-                                        todo={todo}
-                                        index={index}
-                                        key={todo.id}
-                                    />
-                                ))}
+                                {
+                                    filteredTodos.length
+                                        ?
+                                        filteredTodos.map((todo, index) => (
+                                            <TodoItem
+                                                todo={todo}
+                                                index={index}
+                                                key={todo.id}
+                                            />
+                                        ))
+                                        : <h4 className={cl.empty}>Ой, а тут пусто...</h4>
+                                }
                                 {provided.placeholder}
                             </div>
                         )}

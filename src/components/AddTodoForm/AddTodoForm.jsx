@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { v4 } from 'uuid'
 import { useDispatch, useSelector } from 'react-redux'
 import { addTodo } from '../../store/slices/todosSlice'
+import cl from './AddTodoForm.module.scss'
 
 function AddTodoForm() {
     const categories = useSelector(state => state.todos.categories)
@@ -15,6 +16,10 @@ function AddTodoForm() {
             alert('Название должно что-то содержать')
             return
         }
+        if (checkedInput.length > 200) {
+            alert('Название не может содержать больше 200 символов')
+            return
+        }
         const newTodo = {
             body: checkedInput,
             categoryId: select || 'none',
@@ -26,6 +31,7 @@ function AddTodoForm() {
 
     return (
         <form
+            className={cl.form}
             onSubmit={e => e.preventDefault()}
         >
             <input

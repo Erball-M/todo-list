@@ -4,14 +4,10 @@ const todosSlice = createSlice({
     name: 'todos',
     initialState: {
         categories: [
-            { id: '0', name: 'Без категории', categoryTodos: ['12'] },
-            { id: '1', name: 'С категорией', categoryTodos: ['22'] },
+            { id: '0', name: 'Без категории', categoryTodos: [] },
         ],
-        todos: [
-            { id: '12', body: 'first', completed: false },
-            { id: '22', body: 'second', completed: false },
-        ],
-        categoriesOrder: ['0', '1']
+        todos: [],
+        categoriesOrder: ['0']
     },
     reducers: {
         addTodo: (state, action) => {

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { v4 } from 'uuid'
 import { addCategory } from '../../store/slices/todosSlice'
+import cl from './AddCategoryForm.module.scss'
 
 function AddCategoryForm() {
     const dispatch = useDispatch()
@@ -16,6 +17,10 @@ function AddCategoryForm() {
         const checkedInput = input.trim();
         if (!checkedInput) {
             alert('Название должно что-то содержать')
+            return
+        }
+        if (checkedInput.length > 50) {
+            alert('Название не может содеражать больше 50 символов')
             return
         }
 
@@ -34,30 +39,42 @@ function AddCategoryForm() {
     }
 
     return (
-        <>
-            <button
-                className='addBtn'
-                onClick={formActivationHandler}
-            >
-                Добавить категорию
-            </button>
-            {isActive
-                ? <form
-                    onSubmit={e => e.preventDefault()}
-                >
-                    <input
-                        value={input}
-                        onChange={e => setInput(e.target.value)}
-                        placeholder='Название категории...'
-                    />
-                    <button
-                        onClick={addCategoryHandler}
+        <div className={cl.wrapper}>
+            {
+                isActive
+                    ?
+                    <form
+                        className={cl.form
+                        }
+                        onSubmit={e => e.preventDefault()}
                     >
-                        добавить
+                        <div
+                            className={cl.backBtn}
+                            tabIndex={0}
+                            onClick={formActivationHandler}
+                        >
+                            <span>отмена</span>
+                        </div>
+                        <input
+                            value={input}
+                            onChange={e => setInput(e.target.value)}
+                            placeholder='Название категории...'
+                        />
+                        <button
+                            onClick={addCategoryHandler}
+                        >
+                            добавить
+                        </button>
+                    </form >
+                    :
+                    <button
+                        className={cl.toggler}
+                        onClick={formActivationHandler}
+                    >
+                        Добавить категорию
                     </button>
-                </form>
-                : null}
-        </>
+            }
+        </div>
     )
 }
 

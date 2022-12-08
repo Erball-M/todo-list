@@ -28,19 +28,24 @@ function TodoItem({ todo, index }) {
                     {...provided.dragHandleProps}
                 >
                     <div className={cl.left}>
-                        <input
-                            value={todo.completed}
-                            onChange={toggleCompletedHandler}
-                            type='checkbox'
-                        />
-                        {todo.body}
+                        <label className={cl.label}>
+                            <input
+                                className={cl.checkbox}
+                                value={todo.completed}
+                                onChange={toggleCompletedHandler}
+                                type='checkbox'
+                            />
+                            <div className={cl.done} />
+                        </label>
+                        <div className={cl.todoBody}>
+                            {todo.body}
+                        </div>
                     </div>
                     <div className={cl.btns}>
                         <button
+                            className={cl.removeBtn}
                             onClick={removeTodoHandler}
-                        >
-                            X
-                        </button>
+                        />
                     </div>
                 </div>
             )}
