@@ -8,22 +8,25 @@ import cl from './CategoriesList.module.scss'
 function CategoriesList() {
     const dispatch = useDispatch()
 
+    const todos = useSelector(state => state.todos.todos)
     const categoriesOrder = useSelector(state => state.todos.categoriesOrder)
     const categories = useSelector(state => state.todos.categories)
-    const categoriesOrderWithTodos = categories.reduce((acc, category) => {
-        if (category.categoryTodos.length) {
-            acc.push(category.id)
-        }
-        return acc
-    }, [])
+    // const categoriesOrderWithTodos = categories.reduce((acc, category) => {
+    //     if (category.categoryTodos.length) {
+    //         acc.push(category.id)
+    //     }
+    //     return acc
+    // }, [])
+    // const [show, setShow] = useState(false)
+    // const list = show ? categoriesOrder : categoriesOrderWithTodos
 
 
-    const handleBeforeCapture = result => {
-        // const { draggableId } = result
-        // if (!categoriesOrder.includes(draggableId)) {
-        //     setShowEmpty(true)
-        // }
-    }
+    // const handleBeforeCapture = result => {
+    //     const { draggableId } = result
+    //     if (!categoriesOrder.includes(draggableId)) {
+    //         setShow(true)
+    //     }
+    // }
     const handleDragEnd = result => {
         const { destination, draggableId, source } = result;
         if (!destination) return;
@@ -60,10 +63,10 @@ function CategoriesList() {
 
         dispatch(setOrder({ id: source.droppableId, order }))
     }
-
+    if (!todos.length) return <h3 className='title'> Пока нет заданий...</ h3 >
     return (
         <DragDropContext
-            onBeforeCapture={handleBeforeCapture}
+            // onBeforeCapture={}={handleBeforeCapture}
             onDragEnd={handleDragEnd}
         >
             <Droppable droppableId='categories-wrapper' type='column'>
@@ -74,7 +77,7 @@ function CategoriesList() {
                         {...provided.droppableProps}
                     >
                         {
-                            categoriesOrderWithTodos.map((item, index) => (
+                            categoriesOrder.map((item, index) => (
                                 <CategoryItem
                                     category={categories.find(category => category.id === item)}
                                     index={index}

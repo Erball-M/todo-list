@@ -77,5 +77,10 @@ body {
   padding: 20px 20px;
 }
 
+.title {
+  margin-top: 20px;
+  text-align: center
+}
+
 @import './tablet';
 @import './mobile';

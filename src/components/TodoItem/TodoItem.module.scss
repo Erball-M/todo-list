@@ -42,5 +42,14 @@
 @media (max-width: 600px) {
     .todo {
         padding: 10px 20px;
+
+        .left {
+            .body {
+
+                .infoBlock {
+                    font-size: 12px;
+                }
+            }
+        }
     }
 }

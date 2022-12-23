@@ -8,6 +8,7 @@ function CategoryItem({ category, index }) {
     const todos = useSelector(state => state.todos.todos)
     const filteredTodos = category.categoryTodos.map(item => todos.find(todo => todo.id === item))
 
+    if (!filteredTodos.length) return null
     return (
         <Draggable
             draggableId={category.id}
