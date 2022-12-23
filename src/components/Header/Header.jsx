@@ -1,21 +1,28 @@
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { changeTheme } from '../../store/slices/themeSlice'
+import sun from '../../images/sun.svg'
+import moon from '../../images/moon.svg'
 import cl from './Header.module.scss'
 
 function Header() {
-    const toggleTheme = () => {
-        const isDark = document.body.dataset.theme === 'dark'
-        document.body.dataset.theme = isDark ? 'light' : 'dark'
+    const dispatch = useDispatch()
+    const currentTheme = useSelector(state => state.theme.theme)
+    const currentIco = currentTheme === 'dark' ? moon : sun
+
+    const togglerThemeHadnler = () => {
+        dispatch(changeTheme())
     }
 
     return (
         <header className={cl.header}>
             <div className='container'>
-                <button
-                    className={cl.toggler}
-                    onClick={toggleTheme}
+                <div
+                    className={cl.button}
+                    onClick={togglerThemeHadnler}
                 >
-                    toggle theme
-                </button>
+                    <img src={currentIco} alt='themeIco' />
+                </div>
             </div>
         </header>
     )

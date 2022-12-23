@@ -1,80 +1,53 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useState, useRef } from 'react'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { v4 } from 'uuid'
 import { addCategory } from '../../store/slices/todosSlice'
 import cl from './AddCategoryForm.module.scss'
 
-function AddCategoryForm() {
+function AddCategoryForm(props) {
     const dispatch = useDispatch()
     const categories = useSelector(state => state.todos.categories)
     const [input, setInput] = useState('')
-    const [isActive, setIsActive] = useState(false)
+    const ref = useRef()
 
-    const formActivationHandler = () => {
-        setIsActive(!isActive)
-    }
     const addCategoryHandler = () => {
-        const checkedInput = input.trim();
-        if (!checkedInput) {
-            alert('Название должно что-то содержать')
+        const name = input.trim()
+        if (!name.length) {
+            alert('Название категории должно что-то содержать')
             return
         }
-        if (checkedInput.length > 50) {
-            alert('Название не может содеражать больше 50 символов')
-            return
-        }
-
-        if (categories.find(category => category.name.toLowerCase() === checkedInput.toLowerCase())) {
+        if (categories.find(category => category.name === name)) {
             alert('Категория с таким названием уже существует')
             return
         }
-
         const newCategory = {
             id: v4(),
-            name: checkedInput,
+            name,
         }
-        dispatch(addCategory(newCategory))
         setInput('')
-        setIsActive(false)
+        ref.current.blur()
+        dispatch(addCategory(newCategory))
     }
-
     return (
-        <div className={cl.wrapper}>
-            {
-                isActive
-                    ?
-                    <form
-                        className={cl.form
-                        }
-                        onSubmit={e => e.preventDefault()}
-                    >
-                        <div
-                            className={cl.backBtn}
-                            tabIndex={0}
-                            onClick={formActivationHandler}
-                        >
-                            <span>отмена</span>
-                        </div>
-                        <input
-                            value={input}
-                            onChange={e => setInput(e.target.value)}
-                            placeholder='Название категории...'
-                        />
-                        <button
-                            onClick={addCategoryHandler}
-                        >
-                            добавить
-                        </button>
-                    </form >
-                    :
-                    <button
-                        className={cl.toggler}
-                        onClick={formActivationHandler}
-                    >
-                        Добавить категорию
-                    </button>
-            }
-        </div>
+        <li
+            className={cl.item}
+            {...props}
+        >
+            <input
+                className={cl.input}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                ref={ref}
+                placeholder='Новая категория...'
+            />
+            <button
+                className={cl.btn}
+                onClick={addCategoryHandler}
+            >
+                +
+            </button>
+        </li>
     )
 }
 

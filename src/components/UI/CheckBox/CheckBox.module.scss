@@ -1,0 +1,32 @@
+.label {
+    .checkbox {
+        display: none;
+    }
+
+    .placeholder {
+        background: var(--primary-color);
+        height: var(--todoitem-formsize);
+        width: var(--todoitem-formsize);
+        border-radius: 5px;
+        position: relative;
+        background: var(--checkbox-bg);
+    }
+
+    .checkbox:checked+.placeholder {
+        background: var(--primary-color);
+    }
+
+    .checkbox:checked+.placeholder::after {
+        content: '';
+        display: block;
+        height: calc(var(--todoitem-formsize) * .7);
+        width: calc(var(--todoitem-formsize) * .4);
+        border-right: 4px solid var(--checkbox-green);
+        border-bottom: 4px solid var(--checkbox-green);
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        rotate: 45deg;
+        translate: -50% -50%;
+    }
+}

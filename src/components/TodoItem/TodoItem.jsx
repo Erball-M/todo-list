@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd';
-import { useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux';
 import { removeTodo, toggleCompleted } from '../../store/slices/todosSlice';
+import CheckBox from '../UI/CheckBox/CheckBox';
+import RemoveButton from '../UI/RemoveButton/RemoveButton';
 import cl from './TodoItem.module.scss'
 
 function TodoItem({ todo, index }) {
-    const className = todo.completed ? cl.item + ' ' + cl.completed : cl.item
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
+    const isCompletedClassName = todo.completed ? cl.done + ' ' + cl.todo : cl.todo
+    const [isCutted, setIsCutted] = useState(true)
+    const cuttedText = todo.body.length > 100 ? todo.body.slice(0, 100) + '...' : todo.body
+    const text = isCutted ? cuttedText : todo.body
 
     const toggleCompletedHandler = () => {
         dispatch(toggleCompleted(todo.id))
@@ -22,28 +27,41 @@ function TodoItem({ todo, index }) {
         >
             {(provided) => (
                 <div
-                    className={className}
+                    className={isCompletedClassName}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                 >
                     <div className={cl.left}>
-                        <label className={cl.label}>
-                            <input
-                                className={cl.checkbox}
-                                value={todo.completed}
-                                onChange={toggleCompletedHandler}
-                                type='checkbox'
-                            />
-                            <div className={cl.done} />
-                        </label>
-                        <div className={cl.todoBody}>
-                            {todo.body}
+                        <CheckBox
+                            value={todo.completed}
+                            onChange={toggleCompletedHandler}
+                        />
+                        <div className={cl.body}>
+                            <div className={cl.text}>
+                                {text}
+                            </div>
+                            <div className={cl.infoBlock}>
+                                <div>{todo.created}</div>
+                                {
+                                    todo.body.length > 100
+                                        ? <button
+                                            className={cl.readMoreBtn}
+                                            onClick={() => setIsCutted(!isCutted)}
+                                        >
+                                            {
+                                                isCutted
+                                                    ? 'Читать больше...'
+                                                    : 'Читать меньше...'
+                                            }
+                                        </button>
+                                        : null
+                                }
+                            </div>
                         </div>
                     </div>
                     <div className={cl.btns}>
-                        <button
-                            className={cl.removeBtn}
+                        <RemoveButton
                             onClick={removeTodoHandler}
                         />
                     </div>

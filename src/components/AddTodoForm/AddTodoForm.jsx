@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { v4 } from 'uuid'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { addTodo } from '../../store/slices/todosSlice'
+import Select from '../UI/Select/Select'
 import cl from './AddTodoForm.module.scss'
 
 function AddTodoForm() {
-    const categories = useSelector(state => state.todos.categories)
     const dispatch = useDispatch()
     const [input, setInput] = useState('')
-    const [select, setSelect] = useState('0')
+    const [selected, setSelected] = useState('0')
 
     const addTodoHandler = () => {
         const checkedInput = input.trim();
@@ -16,13 +16,9 @@ function AddTodoForm() {
             alert('Название должно что-то содержать')
             return
         }
-        if (checkedInput.length > 200) {
-            alert('Название не может содержать больше 200 символов')
-            return
-        }
         const newTodo = {
             body: checkedInput,
-            categoryId: select || 'none',
+            categoryId: selected || 'none',
             id: v4(),
         }
         dispatch(addTodo(newTodo))
@@ -38,19 +34,10 @@ function AddTodoForm() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 placeholder='Задание, которое предстоит выполнить...'
-            /> <select
-                value={select}
-                onChange={e => setSelect(e.target.value)}
-            >
-                {categories.map(category => (
-                    <option
-                        value={category.id}
-                        key={category.id}
-                    >
-                        {category.name}
-                    </option>
-                ))}
-            </select>
+            />
+            <Select
+                set={setSelected}
+            />
             <button
                 onClick={addTodoHandler}
             >

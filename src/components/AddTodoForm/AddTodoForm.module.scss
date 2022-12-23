@@ -1,68 +1,33 @@
 .form {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
-    color: var(--form-text);
-
-    &>* {
-        padding: var(--form-padding);
-        background: var(--form-bg);
-        margin-right: 3px;
-
-        &:first-child {
-            border-radius: 30px 5px 5px 30px;
-        }
-
-        &:nth-child(n+2) {
-            border-radius: 5px;
-        }
-
-        &:last-child {
-            margin-right: 0;
-            border-radius: 5px 30px 30px 5px;
-        }
-    }
 
     input {
         flex-grow: 1;
-        background-color: var(--input-blur-bg);
-        color: var(--input-blur-text);
-        border: var(--input-border);
+        padding: 10px 20px;
+        border: 1px solid var(--secondary-color);
+        border-radius: 5px;
+    }
 
-        &:focus {
-            background-color: var(--input-focus-bg);
-            color: var(--input-focus-text);
-        }
-
-        &::placeholder {
-            color: var(--input-placeholder);
-        }
+    button {
+        padding: 10px 20px;
+        border: 1px solid var(--secondary-color);
+        border-radius: 5px;
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 992px) {
     .form {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
 
         &>* {
-            padding: var(--form-padding);
-            background: var(--form-bg);
             margin-bottom: 10px;
-            align-self: stretch;
+        }
 
-            &:first-child {
-                border-radius: 30px;
-            }
-
-            &:nth-child(2n) {
-                border-radius: 30px;
-            }
-
-            &:last-child {
-                border-radius: 30px;
-                align-self: center;
-            }
+        button {
+            align-self: center;
+            margin-bottom: 0;
         }
     }
 }

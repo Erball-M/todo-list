@@ -4,14 +4,22 @@ const todosSlice = createSlice({
     name: 'todos',
     initialState: {
         categories: [
-            { id: '0', name: 'Без категории', categoryTodos: [] },
+            { id: '0', name: 'Без категории', categoryTodos: ['1122112'] },
+            { id: '1', name: 'C категорией', categoryTodos: [] },
+            { id: '2', name: 'Работа', categoryTodos: [] },
         ],
-        todos: [],
-        categoriesOrder: ['0']
+        todos: [
+            { "body": "asd", "categoryId": "0", "id": "1122112", "completed": false, "created": "23.12.2022" },
+        ],
+        categoriesOrder: ['0', '1', '2'],
     },
     reducers: {
         addTodo: (state, action) => {
-            state.todos.push({ ...action.payload, completed: false })
+            state.todos.push({
+                ...action.payload,
+                completed: false,
+                created: (new Date()).toLocaleDateString()
+            })
             state.categories.find(category => category.id === action.payload.categoryId).categoryTodos.push(action.payload.id)
         },
         toggleCompleted: (state, action) => {
