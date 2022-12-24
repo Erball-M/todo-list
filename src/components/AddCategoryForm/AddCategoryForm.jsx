@@ -1,15 +1,18 @@
 import React, { useState, useRef } from 'react'
-import { useSelector } from 'react-redux'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { v4 } from 'uuid'
 import { addCategory } from '../../store/slices/todosSlice'
+import { addCategory as addCategoryDB, setCategoriesOrder as setCategoriesOrderDB } from '../../utils/indexedDB'
 import cl from './AddCategoryForm.module.scss'
 
 function AddCategoryForm(props) {
     const dispatch = useDispatch()
     const categories = useSelector(state => state.todos.categories)
+    const categoriesOrder = useSelector(state => state.todos.categoriesOrder)
     const [input, setInput] = useState('')
     const ref = useRef()
+
+    const db = useSelector(state => state.indexedDb.db)
 
     const addCategoryHandler = () => {
         const name = input.trim()
@@ -28,6 +31,10 @@ function AddCategoryForm(props) {
         setInput('')
         ref.current.blur()
         dispatch(addCategory(newCategory))
+        if (db) {
+            addCategoryDB(db, newCategory)
+            setCategoriesOrderDB(db, [...categoriesOrder, newCategory.id])
+        }
     }
     return (
         <li

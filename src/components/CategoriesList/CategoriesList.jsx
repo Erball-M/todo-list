@@ -1,12 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCategoriesOrder, setOrder } from '../../store/slices/todosSlice'
+import { setCategoriesOrder as setCategoriesOrderDB } from '../../utils/indexedDB'
 import CategoryItem from '../CategoryItem/CategoryItem'
 import cl from './CategoriesList.module.scss'
 
 function CategoriesList() {
     const dispatch = useDispatch()
+    const db = useSelector(state => state.indexedDb.db)
 
     const todos = useSelector(state => state.todos.todos)
     const categoriesOrder = useSelector(state => state.todos.categoriesOrder)
@@ -41,6 +43,7 @@ function CategoriesList() {
             newCategoriesOrder.splice(source.index, 1)
             newCategoriesOrder.splice(destination.index, 0, draggableId)
             dispatch(setCategoriesOrder(newCategoriesOrder))
+            setCategoriesOrderDB(db, newCategoriesOrder)
             return
         }
 
