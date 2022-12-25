@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCategoriesOrder, setOrder } from '../../store/slices/todosSlice'
-import { setCategoriesOrder as setCategoriesOrderDB } from '../../utils/indexedDB'
+import { addCategory as addCategoryDB, setCategoriesOrder as setCategoriesOrderDB } from '../../utils/indexedDB'
 import CategoryItem from '../CategoryItem/CategoryItem'
 import cl from './CategoriesList.module.scss'
 
@@ -54,6 +54,11 @@ function CategoriesList() {
             order1.splice(source.index, 1)
             order2.splice(destination.index, 0, draggableId)
 
+            const categoryItemFrom = categories.find(category => category.id === source.droppableId)
+            const categoryItemTo = categories.find(category => category.id === destination.droppableId)
+            addCategoryDB(db, { ...categoryItemFrom, categoryTodos: order1 })
+            addCategoryDB(db, { ...categoryItemTo, categoryTodos: order2 })
+
             dispatch(setOrder({ id: source.droppableId, order: order1 }))
             dispatch(setOrder({ id: destination.droppableId, order: order2 }))
             return
@@ -63,6 +68,8 @@ function CategoriesList() {
         order.splice(source.index, 1)
         order.splice(destination.index, 0, draggableId)
 
+        const categoryItem = categories.find(category => category.id === source.droppableId)
+        addCategoryDB(db, { ...categoryItem, categoryTodos: order })
 
         dispatch(setOrder({ id: source.droppableId, order }))
     }
@@ -80,7 +87,7 @@ function CategoriesList() {
                         {...provided.droppableProps}
                     >
                         {
-                            categoriesOrder.map((item, index) => (
+                            categoriesOrder?.map((item, index) => (
                                 <CategoryItem
                                     category={categories.find(category => category.id === item)}
                                     index={index}

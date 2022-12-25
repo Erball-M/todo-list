@@ -13,15 +13,16 @@ export function indexedDBStart(setDb) {
             const db = req.result
             setDb(db)
 
-
             if (!db.objectStoreNames.contains('todos')) {
                 db.createObjectStore('todos', { keyPath: 'id' });
             }
             if (!db.objectStoreNames.contains('categories')) {
-                db.createObjectStore('categories', { keyPath: 'id' });
+                const store = db.createObjectStore('categories', { keyPath: 'id' });
+                store.put({ id: '0', name: 'Без категории', categoryTodos: [] })
             }
             if (!db.objectStoreNames.contains('categoriesOrder')) {
-                db.createObjectStore('categoriesOrder', { keyPath: 'id', unique: true });
+                const store = db.createObjectStore('categoriesOrder', { keyPath: 'id' }, { unique: true });
+                store.put({ id: 'order', order: ['0'] })
             }
         }
         req.onsuccess = async () => {
@@ -36,18 +37,29 @@ export function indexedDBStart(setDb) {
     })
 }
 
-//Todo Items
-export function addTodo(db, todo) {
+export function addTodo(db, todo, action) {
     const transaction = db.transaction('todos', 'readwrite');
     const store = transaction.objectStore('todos');
-    store.add({
-        completed: false,
+    store.put({
+        completed: action ? !action.completed : false,
         created: (new Date()).toLocaleDateString(),
         ...todo
     });
 
-    transaction.oncomplete = function () { console.log('todo has been added') }
     transaction.onerror = function (err) { console.log(err.message) }
+}
+export function toggleCompleted(db, id) {
+    const transaction = db.transaction('todos', 'readwrite');
+    const store = transaction.objectStore('todos');
+
+    const toggledTodo = store.get(id)
+    toggledTodo.onsuccess = () => {
+        const toggled = {
+            ...toggledTodo.result,
+            completed: !toggledTodo.result.completed
+        }
+        store.put(toggled)
+    }
 }
 export function getTodos(db) {
     const transaction = db.transaction('todos', 'readwrite');
@@ -62,18 +74,20 @@ export function getTodos(db) {
         }
     })
 }
+export function removeTodo(db, id) {
+    const transaction = db.transaction('todos', 'readwrite');
+    transaction.onerror = function (err) { console.log(err.message) }
+    const store = transaction.objectStore('todos');
 
+    store.delete(id)
+}
 
-//Category Items
-export function addCategory(db, category, categoryTodos) {
+export function addCategory(db, category) {
     const transaction = db.transaction('categories', 'readwrite');
     const store = transaction.objectStore('categories');
-    store.put({
-        categoryTodos: categoryTodos || [],
-        ...category,
-    });
+    store.put(category);
 
-    transaction.oncomplete = function () { console.log('category has been added') }
+    // transaction.oncomplete = function () { console.log('category has been added') }
     transaction.onerror = function (err) { console.log(err.message) }
 }
 export function getCategories(db) {
@@ -90,13 +104,11 @@ export function getCategories(db) {
     })
 }
 
-//Categorie Order Item
 export function setCategoriesOrder(db, order) {
     const transaction = db.transaction('categoriesOrder', 'readwrite');
     const store = transaction.objectStore('categoriesOrder');
     store.put({ id: 'order', order })
 
-    transaction.oncomplete = function () { console.log('categories order has been added') }
     transaction.onerror = function (err) { console.log(err.message) }
 }
 export function getCategoriesOrder(db) {
@@ -107,7 +119,7 @@ export function getCategoriesOrder(db) {
     return new Promise((resolve) => {
         const categoriesOrder = store.getAll()
         categoriesOrder.onsuccess = () => {
-            resolve(categoriesOrder.result)
+            resolve(categoriesOrder.result[0].order)
         }
     })
 }

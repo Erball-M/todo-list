@@ -27,6 +27,7 @@ function AddCategoryForm(props) {
         const newCategory = {
             id: v4(),
             name,
+            categoryTodos: [],
         }
         setInput('')
         ref.current.blur()

@@ -11,6 +11,7 @@ function AddTodoForm() {
     const [input, setInput] = useState('')
     const [selected, setSelected] = useState('0')
 
+
     const categories = useSelector(state => state.todos.categories)
     const db = useSelector(state => state.indexedDb.db)
 
@@ -25,11 +26,11 @@ function AddTodoForm() {
             categoryId: selected || 'none',
             id: v4(),
         }
-        dispatch(addTodo(newTodo))
 
+        dispatch(addTodo(newTodo))
         addTodoDB(db, newTodo)
         const categoryItem = categories.find(category => category.id === newTodo.categoryId)
-        addCategoryDB(db, categoryItem)
+        addCategoryDB(db, { ...categoryItem, categoryTodos: [...categoryItem.categoryTodos, newTodo.id] })
 
         setInput('')
     }

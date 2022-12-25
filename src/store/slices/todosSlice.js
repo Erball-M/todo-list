@@ -6,18 +6,10 @@ export const getData = createAsyncThunk(
     'todos/getDate',
     async (_, { dispatch }) => {
         const response = await indexedDBStart((db) => dispatch(setDb(db)))
-        if (response.categories.length) {
-            dispatch(setCategories(response.categories))
-        }
-        if (response.categoriesOrder.length) {
-            dispatch(setCategoriesOrder(response.categoriesOrder[0].order))
-            console.log(response.categoriesOrder[0].order)
-        } else {
-            dispatch(setCategoriesOrder(['0']))
-        }
-        if (response.categoriesOrder.length) {
-            dispatch(setTodos(response.todos))
-        }
+
+        dispatch(setTodos([...response.todos]))
+        dispatch(setCategories([...response.categories]))
+        dispatch(setCategoriesOrder([...response.categoriesOrder]))
     }
 )
 
@@ -28,7 +20,7 @@ const todosSlice = createSlice({
             { id: '0', name: 'Без категории', categoryTodos: [] },
         ],
         todos: [],
-        categoriesOrder: [],
+        categoriesOrder: null,
     },
     reducers: {
         addTodo: (state, action) => {
