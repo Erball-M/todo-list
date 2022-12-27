@@ -7,7 +7,7 @@ export function indexedDBStart(setDb) {
             window.msIndexedDB ||
             window.shimIndexedDB;
 
-        const req = indexedDB.open('TodoApp', 1);
+        const req = indexedDB.open('TodoApp', 2);
         req.onerror = (err) => console.log(err.message)
         req.onupgradeneeded = () => {
             const db = req.result
