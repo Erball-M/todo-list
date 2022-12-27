@@ -9,6 +9,11 @@ const store = configureStore({
         theme: themeSlice,
         indexedDb: indexedDbSlice,
     },
+    middleware: (getDefaultMiddleware) => {
+        return getDefaultMiddleware({
+            serializableCheck: false
+        })
+    },
 })
 
 export default store

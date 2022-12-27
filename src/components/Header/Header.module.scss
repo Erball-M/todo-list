@@ -1,4 +1,19 @@
 .header {
-    background: var(--header-bg);
-    //color: var(--primary-text);
+    background: var(--secondary-color);
+    color: var(--title-color);
+
+    &>div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .btn {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .quote {
+        margin-right: 10px;
+    }
 }

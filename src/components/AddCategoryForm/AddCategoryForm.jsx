@@ -2,8 +2,10 @@ import React, { useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { v4 } from 'uuid'
 import { addCategory } from '../../store/slices/todosSlice'
-import { addCategory as addCategoryDB, setCategoriesOrder as setCategoriesOrderDB } from '../../utils/indexedDB'
+import { addCategory as addCategoryDB, setCategoriesOrder as setCategoriesOrderDB } from '../../API/indexedDB'
+import Button from '../UI/Button/Button'
 import cl from './AddCategoryForm.module.scss'
+import { toast } from 'react-toastify'
 
 function AddCategoryForm(props) {
     const dispatch = useDispatch()
@@ -17,11 +19,11 @@ function AddCategoryForm(props) {
     const addCategoryHandler = () => {
         const name = input.trim()
         if (!name.length) {
-            alert('Название категории должно что-то содержать')
+            toast('Название категории должно что-то содержать')
             return
         }
         if (categories.find(category => category.name === name)) {
-            alert('Категория с таким названием уже существует')
+            toast('Категория с таким названием уже существует')
             return
         }
         const newCategory = {
@@ -49,12 +51,11 @@ function AddCategoryForm(props) {
                 ref={ref}
                 placeholder='Новая категория...'
             />
-            <button
-                className={cl.btn}
+            <Button
                 onClick={addCategoryHandler}
             >
                 +
-            </button>
+            </Button>
         </li>
     )
 }

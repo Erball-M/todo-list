@@ -1,10 +1,16 @@
 .todo {
-    background: var(--todoitem-bg);
+    background: var(--primary-color);
     border-radius: 15px;
-    padding: 20px 40px;
+    padding: 20px 20px 20px 40px;
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
+    transition: scale 100ms ease-in, box-shadow 100ms ease-in;
+
+    &:hover {
+        // scale: 1.02;
+        box-shadow: var(--box-shadow);
+    }
 
     .left {
         display: flex;
@@ -17,6 +23,11 @@
 
             .text {
                 margin-bottom: 10px;
+                display: inline-block;
+                width: 100%;
+                height: 1em;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .infoBlock {
@@ -25,6 +36,10 @@
 
                 .readMoreBtn {
                     cursor: pointer;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
                 }
             }
         }
@@ -32,11 +47,15 @@
 }
 
 .done {
-    background: var(--todoitem-bg-completed);
+    background: var(--todo-bg-completed);
 
     .text {
         text-decoration: line-through;
     }
+}
+
+.dragging {
+    box-shadow: var(--box-shadow);
 }
 
 @media (max-width: 600px) {
@@ -45,6 +64,7 @@
 
         .left {
             .body {
+                margin: 0 10px;
 
                 .infoBlock {
                     font-size: 12px;

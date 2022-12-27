@@ -2,40 +2,38 @@ import React from 'react'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCategoriesOrder, setOrder } from '../../store/slices/todosSlice'
-import { addCategory as addCategoryDB, setCategoriesOrder as setCategoriesOrderDB } from '../../utils/indexedDB'
+import { addCategory as addCategoryDB, setCategoriesOrder as setCategoriesOrderDB } from '../../API/indexedDB'
 import CategoryItem from '../CategoryItem/CategoryItem'
 import cl from './CategoriesList.module.scss'
 
 function CategoriesList() {
     const dispatch = useDispatch()
-    const db = useSelector(state => state.indexedDb.db)
 
+    const db = useSelector(state => state.indexedDb.db)
     const todos = useSelector(state => state.todos.todos)
     const categoriesOrder = useSelector(state => state.todos.categoriesOrder)
     const categories = useSelector(state => state.todos.categories)
-    // const categoriesOrderWithTodos = categories.reduce((acc, category) => {
-    //     if (category.categoryTodos.length) {
-    //         acc.push(category.id)
-    //     }
-    //     return acc
-    // }, [])
-    // const [show, setShow] = useState(false)
-    // const list = show ? categoriesOrder : categoriesOrderWithTodos
 
-
-    // const handleBeforeCapture = result => {
-    //     const { draggableId } = result
-    //     if (!categoriesOrder.includes(draggableId)) {
-    //         setShow(true)
+    // const handleBeforeCapture = (result) => {
+    //     const { draggableId: id } = result
+    //     if (todos.find(todo => todo.id === id)) {
+    //         dispatch(toggleIsDragging({ id, isDragging: true }))
     //     }
     // }
     const handleDragEnd = result => {
         const { destination, draggableId, source } = result;
-        if (!destination) return;
+        if (!destination) return
+        // {
+        //     dispatch(toggleIsDragging({ id: draggableId, isDragging: false }))
+        // }
         if (
             destination.droppableId === source.droppableId
             && destination.index === source.index
-        ) return;
+        ) return
+        // {
+        // dispatch(toggleIsDragging({ id: draggableId, isDragging: false }))
+        // 
+        // };
 
 
         if (source.droppableId === 'categories-wrapper') {
@@ -72,11 +70,12 @@ function CategoriesList() {
         addCategoryDB(db, { ...categoryItem, categoryTodos: order })
 
         dispatch(setOrder({ id: source.droppableId, order }))
+        // dispatch(toggleIsDragging({ id: draggableId, isDragging: false }))
     }
     if (!todos.length) return <h3 className='title'> Пока нет заданий...</ h3 >
     return (
         <DragDropContext
-            // onBeforeCapture={}={handleBeforeCapture}
+            // onBeforeCapture={handleBeforeCapture}
             onDragEnd={handleDragEnd}
         >
             <Droppable droppableId='categories-wrapper' type='column'>

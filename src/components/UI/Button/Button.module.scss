@@ -1,0 +1,26 @@
+.btn {
+    cursor: pointer;
+
+    &.default {
+        background: var(--secondary-color);
+        color: var(--title-color);
+        padding: 10px 20px;
+        border-radius: 5px;
+
+        &:active {
+            background: var(--secondary-color-darker);
+        }
+    }
+
+    &.remove {
+        svg {
+            width: var(--todoitem-formsize);
+            height: var(--todoitem-formsize);
+            fill: var(--secondary-color);
+
+            &:active {
+                fill: var(--secondary-color-darker);
+            }
+        }
+    }
+}

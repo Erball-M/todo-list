@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { indexedDBStart } from "../../utils/indexedDB";
+import { indexedDBStart } from "../../API/indexedDB";
 import { setDb } from "./indexedDbSlice";
 
 export const getData = createAsyncThunk(
@@ -10,6 +10,7 @@ export const getData = createAsyncThunk(
         dispatch(setTodos([...response.todos]))
         dispatch(setCategories([...response.categories]))
         dispatch(setCategoriesOrder([...response.categoriesOrder]))
+        dispatch(setStats({ ...response.stats }))
     }
 )
 
@@ -21,18 +22,30 @@ const todosSlice = createSlice({
         ],
         todos: [],
         categoriesOrder: null,
+        stats: {
+            done: 0,
+            total: 0,
+        }
     },
     reducers: {
         addTodo: (state, action) => {
             state.todos.push({
                 ...action.payload,
                 completed: false,
-                created: (new Date()).toLocaleDateString()
+                created: (new Date()).toLocaleDateString(),
             })
             state.categories.find(category => category.id === action.payload.categoryId).categoryTodos.push(action.payload.id)
+            state.stats.total += 1
         },
         toggleCompleted: (state, action) => {
             const index = state.todos.findIndex(todo => todo.id === action.payload)
+
+            if (!state.todos[index].completed) {
+                state.stats.done += 1
+            } else {
+                if (state.stats.done - 1 >= 0) state.stats.done -= 1
+            }
+
             state.todos.splice(index, 1, { ...state.todos[index], completed: !state.todos[index].completed })
         },
         removeTodo: (state, action) => {
@@ -56,6 +69,10 @@ const todosSlice = createSlice({
         setTodos: (state, action) => {
             state.todos = action.payload
         },
+        setStats: (state, action) => {
+            state.stats.total = action.payload.total
+            state.stats.done = action.payload.done
+        },
     },
 })
 
@@ -68,5 +85,6 @@ export const {
     setCategoriesOrder,
     setCategories,
     setTodos,
+    setStats,
 } = todosSlice.actions;
 export default todosSlice.reducer

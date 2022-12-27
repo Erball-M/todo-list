@@ -14,17 +14,21 @@ function CategoryItem({ category, index }) {
             draggableId={category.id}
             index={index}
         >
-            {(provided) => (
+            {(provided, snapshot) => (
                 <div
                     className={cl.item}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                 >
-                    <div className={cl.title}>
+                    <div
+                        className={cl.title}
+                    >
                         <h2>{category.name}</h2>
                     </div>
-                    <Droppable droppableId={category.id}>
+                    <Droppable
+                        droppableId={category.id}
+                    >
                         {(provided) => (<div
                             className={cl.list}
                             ref={provided.innerRef}

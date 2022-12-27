@@ -30,6 +30,7 @@
         }
     }
 
+
     .wrapper {
         width: 100vw;
         height: 100vh;
@@ -37,39 +38,6 @@
         top: 0;
         left: 0;
         z-index: 10;
-    }
-
-    .list {
-        position: absolute;
-        left: 0;
-        width: 200%;
-        background: var(--secondary-color);
-        border-radius: 5px;
-        overflow: hidden;
-        z-index: 10000;
-        box-shadow: var(--box-shadow);
-
-        li {
-            list-style-type: none;
-            padding: 10px 20px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
-        }
-
-        .item {
-            cursor: pointer;
-
-            &:hover {
-                background: var(--primary-color);
-            }
-        }
-
-        .categoryForm {
-            display: flex;
-            justify-content: center;
-            border-top: 1px solid black;
-        }
     }
 }
 

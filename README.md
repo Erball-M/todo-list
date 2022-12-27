@@ -4,3 +4,4 @@
 + redux toolkit
 + react-beautiful-dnd
 + node-sass
++ react-toastify
