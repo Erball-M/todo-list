@@ -2,22 +2,22 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
-import Header from './components/Header/Header'
-import AddTodoForm from "./components/AddTodoForm/AddTodoForm";
-import CategoriesList from "./components/CategoriesList/CategoriesList";
-import Footer from "./components/Footer/Footer";
-import Loader from "./components/UI/Loader/Loader";
-import { getData } from "./store/slices/todosSlice";
-import useDBStart from "./Hooks/useDBStart";
+import useLoading from "./Hooks/useLoading";
+import { openDB } from "./store/slices/todosSlice";
+import { getTheme } from "./store/slices/themeSlice";
+import { fetchQuote } from "./store/slices/quotesSlice";
 
 function App() {
   const dispatch = useDispatch()
-  const currentTheme = useSelector(state => state.theme.theme)
-  const [fetcher, isDataLoading] = useDBStart(async () => dispatch(getData()))
 
-  useEffect(() => {
-    document.body.dataset.theme = currentTheme
-  }, [currentTheme])
+  const theme = useSelector(state => state.theme.theme)
+
+  const [fetcher, isLoading] = useLoading(async () => {
+    await dispatch(getTheme())
+    await dispatch(openDB())
+    await dispatch(fetchQuote())
+  })
+
   useEffect(() => {
     async function fetchData() {
       await fetcher()
@@ -25,17 +25,17 @@ function App() {
     fetchData();
   }, []);
 
+  if (isLoading) return <Loader />
   return (
     <>
-      <div className="App">
+      <div
+        className="App"
+        data-themes={theme}
+      >
         <Header />
         <main className='container main' >
           <AddTodoForm />
-          {
-            isDataLoading
-              ? <Loader />
-              : <CategoriesList />
-          }
+          <CategoriesList />
         </main>
         <Footer />
       </div>

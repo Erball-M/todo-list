@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import todosSlice from "./slices/todosSlice";
 import themeSlice from "./slices/themeSlice";
-import indexedDbSlice from "./slices/indexedDbSlice";
+import quotesSlice from "./slices/quotesSlice";
 
 const store = configureStore({
     reducer: {
         todos: todosSlice,
         theme: themeSlice,
-        indexedDb: indexedDbSlice,
+        quotes: quotesSlice,
     },
     middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware({

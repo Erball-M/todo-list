@@ -1,90 +1,179 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { indexedDBStart } from "../../API/indexedDB";
-import { setDb } from "./indexedDbSlice";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
+import indexedDBService from "../../API/indexedDBService";
+import { dataCorrector, fileCorrector } from "../../utils/dataCorrector.js";
 
-export const getData = createAsyncThunk(
-    'todos/getDate',
-    async (_, { dispatch }) => {
-        const response = await indexedDBStart((db) => dispatch(setDb(db)))
+export const openDB = createAsyncThunk(
+    'todos/openDB',
+    async () => {
+        try {
+            const data = await indexedDBService.open()
 
-        dispatch(setTodos([...response.todos]))
-        dispatch(setCategories([...response.categories]))
-        dispatch(setCategoriesOrder([...response.categoriesOrder]))
-        dispatch(setStats({ ...response.stats }))
+            const correctedData = dataCorrector(data)
+            return correctedData
+        } catch (err) {
+            console.log(err.message)
+        }
+    }
+)
+export const importData = createAsyncThunk(
+    'todos/importData',
+    async (info) => {
+        try {
+            const { file, type = 'change' } = info
+
+            const correctedFile = await fileCorrector(file)
+            return ({ data: correctedFile, type })
+        } catch (err) {
+            console.log(err.message)
+        }
     }
 )
 
 const todosSlice = createSlice({
     name: 'todos',
     initialState: {
-        categories: [
-            { id: '0', name: 'Без категории', categoryTodos: [] },
-        ],
+        categories: [{ id: '0', name: 'Без категории', categoryTodos: [] },],
         todos: [],
-        categoriesOrder: null,
-        stats: {
-            done: 0,
-            total: 0,
-        }
+        categoriesOrder: [{ order: ['0'] }],
+        stats: [{ done: 0, total: 0 }],
     },
     reducers: {
-        addTodo: (state, action) => {
-            state.todos.push({
-                ...action.payload,
+        setTodo: (state, action) => {
+            const todo = action.payload
+            const newTodo = {
                 completed: false,
                 created: (new Date()).toLocaleDateString(),
-            })
-            state.categories.find(category => category.id === action.payload.categoryId).categoryTodos.push(action.payload.id)
-            state.stats.total += 1
-        },
-        toggleCompleted: (state, action) => {
-            const index = state.todos.findIndex(todo => todo.id === action.payload)
-
-            if (!state.todos[index].completed) {
-                state.stats.done += 1
-            } else {
-                if (state.stats.done - 1 >= 0) state.stats.done -= 1
+                ...todo,
             }
 
-            state.todos.splice(index, 1, { ...state.todos[index], completed: !state.todos[index].completed })
+            const todoIndex = state.todos.findIndex(todo => todo.id === newTodo.id)
+            if (todoIndex > -1) {
+                state.todos.splice(todoIndex, 1, newTodo)
+                if (newTodo.completed) {
+                    const newDoneCount = state.stats[0].done + 1
+                    state.stats[0].done = newDoneCount
+                    indexedDBService.set('stats', { id: 'stats', total: state.stats[0].total, done: newDoneCount })
+                } else {
+                    const newDoneCount = state.stats.done - 1;
+                    if (newDoneCount < 0) return;
+                    state.stats[0].done = newDoneCount;
+                    indexedDBService.set('stats', { id: 'stats', total: state.stats[0].total, done: newDoneCount })
+                }
+            } else {
+                state.todos.push(newTodo)
+                const todosCategory = state.categories.find(category => category.id === newTodo.categoryId)
+                todosCategory.categoryTodos.push(newTodo.id)
+                const newTotalCount = state.stats[0].total + 1
+                state.stats[0].total = newTotalCount
+
+                indexedDBService.set('stats', { id: 'stats', done: state.stats[0].done, total: newTotalCount })
+                indexedDBService.set('categories', { ...todosCategory, categoryTodos: [...todosCategory.categoryTodos] })
+            }
+
+            indexedDBService.set('todos', newTodo)
         },
         removeTodo: (state, action) => {
-            const zxx = state.categories.find(category => category.categoryTodos.includes(action.payload))
-            zxx.categoryTodos = zxx.categoryTodos.filter(todoId => todoId !== action.payload)
-            state.todos = state.todos.filter(todo => todo.id !== action.payload)
+            const id = action.payload
+            const todosCategory = state.categories
+                .find(category => category.categoryTodos.includes(id))
+            todosCategory.categoryTodos = todosCategory.categoryTodos
+                .filter(todoId => todoId !== id)
+
+            state.todos = state.todos.filter(todo => todo.id !== id)
+
+            indexedDBService.set('categories', { ...todosCategory })
+            indexedDBService.remove('todos', id)
         },
+
         addCategory: (state, action) => {
-            state.categories.push({ ...action.payload, categoryTodos: [] })
-            state.categoriesOrder.push(action.payload.id)
+            const newCategory = {
+                categoryTodos: [],
+                ...action.payload,
+            }
+
+            state.categories.push(newCategory)
+
+            const order = state.categoriesOrder[0].order
+            order.push(newCategory.id)
+
+            indexedDBService.set('categoriesOrder', { id: 'order', order: [...order] })
+            indexedDBService.set('categories', newCategory)
         },
-        setOrder: (state, action) => {
-            state.categories.find(category => category.id === action.payload.id).categoryTodos = action.payload.order
+        setTodosOrder: (state, action) => {
+            const info = action.payload
+
+            const category = state.categories
+                .find(category => category.id === info.id)
+
+            const set = Array.from(new Set(info.order))
+            if (set.length !== info.order.length) {
+                toast('Слишком быстро!')
+                return
+            }
+
+            category.categoryTodos = info.order
+
+            indexedDBService.set('categories', { ...category, categoryTodos: [...info.order] })
         },
         setCategoriesOrder: (state, action) => {
-            state.categoriesOrder = action.payload
-        },
-        setCategories: (state, action) => {
-            state.categories = action.payload
-        },
-        setTodos: (state, action) => {
-            state.todos = action.payload
-        },
-        setStats: (state, action) => {
-            state.stats.total = action.payload.total
-            state.stats.done = action.payload.done
+            const newOrder = action.payload
+
+            state.categoriesOrder[0].order = [...newOrder]
+
+            indexedDBService.set('categoriesOrder', { id: 'order', order: [...newOrder] })
         },
     },
+    extraReducers: {
+        [openDB.fulfilled]: (state, action) => {
+            const data = action.payload
+
+            Object.keys(data).forEach(key => {
+                state[key] = [...data[key]]
+            })
+        },
+        [importData.fulfilled]: (state, action) => {
+            const { data, type } = action.payload
+
+            if (type === 'change') {
+                Object.keys(data).forEach(key => {
+                    state[key] = [...data[key]]
+                })
+
+                indexedDBService.updateData(data, type)
+            } else if (type === 'add') {
+                function getIds(data) {
+                    const res = data.reduce((acc, item) => {
+                        acc.push(item.id)
+                        return acc
+                    }, [])
+                    return res
+                }
+                const categoriesIds = getIds(state.categories)
+
+                //Добавление новых категорий и их заданий
+                const newCategories = data.categories.filter(item => !categoriesIds.includes(item.id))
+                let newTodos = []
+                newCategories.forEach(category => {
+                    newTodos.push(...category.categoryTodos)
+                    indexedDBService.set('categories', category)
+                })
+                newTodos.forEach(item => {
+                    indexedDBService.set
+                })
+                state.todos.push(...newTodos.map(item => data.todos.find(todo => todo.id === item)))
+                state.categories.push(...newCategories)
+            }
+            return
+        },
+    }
 })
 
 export const {
-    addTodo,
-    toggleCompleted,
+    setTodo,
     removeTodo,
     addCategory,
-    setOrder,
+    setTodosOrder,
     setCategoriesOrder,
-    setCategories,
-    setTodos,
-    setStats,
 } = todosSlice.actions;
 export default todosSlice.reducer

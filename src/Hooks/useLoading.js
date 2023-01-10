@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useDBStart(callback) {
+export function useLoading(callback) {
     const [isLoading, setIsLoading] = useState(false)
 
     const dbStart = async () => {
@@ -18,4 +18,4 @@ export function useDBStart(callback) {
     return [dbStart, isLoading]
 }
 
-export default useDBStart;
+export default useLoading;
